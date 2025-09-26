@@ -75,9 +75,9 @@ const Participantes = () => {
     // Asegurar que participantes siempre sea un array
     const safeParticipantes = Array.isArray(participantes) ? participantes : [];
     let filtered = safeParticipantes;
-    
+
     if (filtros.sede !== "Todas") {
-      filtered = filtered.filter(p => p.sede === filtros.sede);
+      filtered = filtered.filter(p => p.sede && p.sede.toLowerCase().includes(filtros.sede.toLowerCase()));
     }
     if (filtros.estado !== "Todos") {
       filtered = filtered.filter(p => p.estado === filtros.estado);
