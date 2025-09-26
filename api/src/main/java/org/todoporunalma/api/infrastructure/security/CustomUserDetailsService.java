@@ -26,9 +26,11 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario inactivo: " + email);
         }
 
+        // TEMPORAL: Para desarrollo, usar contraseña fija "password"
+        // TODO: En producción, usar usuario.getPasswordHash()
         return User.builder()
                 .username(usuario.getEmail())
-                .password(usuario.getPasswordHash())
+                .password("password")
                 .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name())))
                 .build();
     }
