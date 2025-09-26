@@ -401,7 +401,7 @@ class ApiService {
   }
 
   // ==================== SEDES ====================
-  
+
   // Obtener sedes
   async getSedes() {
     try {
@@ -409,9 +409,51 @@ class ApiService {
       return { data: response.data || [], error: null };
     } catch (error) {
       console.error('Error obteniendo sedes:', error);
-      return { 
-        data: [], 
-        error: { message: 'Error al cargar sedes' } 
+      return {
+        data: [],
+        error: { message: 'Error al cargar sedes' }
+      };
+    }
+  }
+
+  // Crear nueva sede
+  async createSede(sedeData) {
+    try {
+      console.log('🔄 Enviando datos de sede:', sedeData);
+
+      const response = await apiClient.post('/sedes', sedeData);
+      console.log('✅ Sede creada, respuesta:', response.data);
+      return { data: response.data, error: null };
+    } catch (error) {
+      console.error('❌ Error creando sede:', error);
+      return {
+        data: null,
+        error: {
+          message: error.response?.data?.message || error.message || 'Error al crear sede'
+        }
+      };
+    }
+  }
+
+  // Actualizar sede
+  async updateSede(id, sedeData) {
+    try {
+      if (!id) {
+        return {
+          data: null,
+          error: { message: 'ID de sede requerido' }
+        };
+      }
+
+      const response = await apiClient.put(`/sedes/${id}`, sedeData);
+      return { data: response.data, error: null };
+    } catch (error) {
+      console.error('Error actualizando sede:', error);
+      return {
+        data: null,
+        error: {
+          message: error.message || 'Error al actualizar sede'
+        }
       };
     }
   }

@@ -14,6 +14,7 @@ const Sedes = () => {
   // Estados para modales
   const [modalAbierto, setModalAbierto] = useState(null);
   const [sedeSeleccionada, setSedeSeleccionada] = useState(null);
+  const [dropdownAbierto, setDropdownAbierto] = useState(null);
 
   // Función para cargar sedes
   const loadSedes = async () => {
@@ -43,6 +44,18 @@ const Sedes = () => {
 
   useEffect(() => {
     loadSedes();
+  }, []);
+
+  // Cerrar dropdown al hacer click fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-container')) {
+        setDropdownAbierto(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Funciones para manejar modales

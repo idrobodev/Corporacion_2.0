@@ -50,6 +50,16 @@ class DatabaseService {
     return await api.getSedes();
   }
 
+  // Crear nueva sede
+  async createSede(sedeData) {
+    return await api.createSede(sedeData);
+  }
+
+  // Actualizar sede
+  async updateSede(id, sedeData) {
+    return await api.updateSede(id, sedeData);
+  }
+
   // Crear nueva mensualidad
   async createMensualidad(mensualidadData) {
     return await api.createMensualidad(mensualidadData);
