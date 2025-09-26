@@ -314,7 +314,8 @@ const Participantes = () => {
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="Todas">Todas las Sedes</option>
-              <option value="Bello">Bello</option>
+              <option value="Bello Principal">Bello Principal</option>
+              <option value="Bello Campestre">Bello Campestre</option>
               <option value="Apartadó">Apartadó</option>
             </select>
           </div>
@@ -721,7 +722,8 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
-              <option value="Bello">Bello</option>
+              <option value="Bello Principal">Bello Principal</option>
+              <option value="Bello Campestre">Bello Campestre</option>
               <option value="Apartadó">Apartadó</option>
             </select>
           </div>
@@ -882,7 +884,8 @@ const ModalCrearParticipante = ({ onCerrar, onCrear }) => {
               onChange={(e) => setFormData({...formData, sede: e.target.value})}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="Bello">Bello</option>
+              <option value="Bello Principal">Bello Principal</option>
+              <option value="Bello Campestre">Bello Campestre</option>
               <option value="Apartadó">Apartadó</option>
             </select>
           </div>
