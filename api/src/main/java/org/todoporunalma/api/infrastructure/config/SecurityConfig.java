@@ -47,9 +47,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**",
                                 "/api/swagger-ui/**", "/api/swagger-ui.html", "/api/api-docs/**", "/api/v3/api-docs/**"
                         ).permitAll()
-                        .requestMatchers("/dashboard/**").hasAnyRole("ADMINISTRADOR", "CONSULTA")
-                        .requestMatchers("/participantes/**", "/mensualidades/**", "/sedes/**").hasAnyRole("ADMINISTRADOR", "CONSULTA")
-                        .requestMatchers("/files/**").hasAnyRole("ADMINISTRADOR", "CONSULTA")
+                        // TEMPORAL: Permitir acceso público a datos para desarrollo
+                        .requestMatchers("/dashboard/**", "/participantes/**", "/mensualidades/**", "/sedes/**", "/files/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
