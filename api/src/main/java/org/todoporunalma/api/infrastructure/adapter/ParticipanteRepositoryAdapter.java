@@ -9,17 +9,16 @@ import org.todoporunalma.api.infrastructure.repository.JpaParticipanteRepository
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
 public class ParticipanteRepositoryAdapter implements ParticipanteRepository {
-    
+
     private final JpaParticipanteRepository jpaParticipanteRepository;
     private final ParticipanteMapper participanteMapper;
 
     @Override
-    public Optional<Participante> findById(UUID id) {
+    public Optional<Participante> findById(String id) {
         return jpaParticipanteRepository.findById(id)
                 .map(participanteMapper::toDomain);
     }
@@ -38,7 +37,7 @@ public class ParticipanteRepositoryAdapter implements ParticipanteRepository {
     }
 
     @Override
-    public List<Participante> findBySedeId(UUID sedeId) {
+    public List<Participante> findBySedeId(String sedeId) {
         return jpaParticipanteRepository.findBySedeId(sedeId).stream()
                 .map(participanteMapper::toDomain)
                 .toList();
@@ -59,7 +58,7 @@ public class ParticipanteRepositoryAdapter implements ParticipanteRepository {
     }
 
     @Override
-    public void deleteById(UUID id) {
+    public void deleteById(String id) {
         jpaParticipanteRepository.deleteById(id);
     }
 

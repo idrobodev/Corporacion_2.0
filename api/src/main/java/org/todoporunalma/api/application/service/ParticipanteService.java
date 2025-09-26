@@ -9,17 +9,16 @@ import org.todoporunalma.api.domain.port.ParticipanteRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ParticipanteService {
-    
+
     private final ParticipanteRepository participanteRepository;
 
     @Transactional(readOnly = true)
-    public Optional<Participante> findById(UUID id) {
+    public Optional<Participante> findById(String id) {
         return participanteRepository.findById(id);
     }
 
@@ -34,7 +33,7 @@ public class ParticipanteService {
     }
 
     @Transactional(readOnly = true)
-    public List<Participante> findBySedeId(UUID sedeId) {
+    public List<Participante> findBySedeId(String sedeId) {
         return participanteRepository.findBySedeId(sedeId);
     }
 
@@ -45,14 +44,14 @@ public class ParticipanteService {
 
     public Participante save(Participante participante) {
         if (participante.getId() == null) {
-            participante.setId(UUID.randomUUID());
+            participante.setId(participante.getDocumento());
             participante.setCreatedAt(LocalDateTime.now());
         }
         participante.setUpdatedAt(LocalDateTime.now());
         return participanteRepository.save(participante);
     }
 
-    public void deleteById(UUID id) {
+    public void deleteById(String id) {
         participanteRepository.deleteById(id);
     }
 

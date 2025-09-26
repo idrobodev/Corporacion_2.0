@@ -21,7 +21,6 @@ import org.todoporunalma.api.infrastructure.web.mapper.ParticipanteDtoMapper;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -67,7 +66,7 @@ public class ParticipanteController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ParticipanteDto>> getParticipanteById(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<ParticipanteDto>> getParticipanteById(@PathVariable String id) {
         try {
             var participante = participanteService.findById(id)
                     .map(participanteDtoMapper::toDto)
@@ -108,7 +107,7 @@ public class ParticipanteController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
     public ResponseEntity<ApiResponse<ParticipanteDto>> updateParticipante(
-            @PathVariable UUID id,
+            @PathVariable String id,
             @Valid @RequestBody ParticipanteDto participanteDto) {
         try {
             if (!participanteService.findById(id).isPresent()) {
@@ -129,7 +128,7 @@ public class ParticipanteController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRADOR')")
-    public ResponseEntity<ApiResponse<String>> deleteParticipante(@PathVariable UUID id) {
+    public ResponseEntity<ApiResponse<String>> deleteParticipante(@PathVariable String id) {
         try {
             if (!participanteService.findById(id).isPresent()) {
                 return ResponseEntity.notFound().build();

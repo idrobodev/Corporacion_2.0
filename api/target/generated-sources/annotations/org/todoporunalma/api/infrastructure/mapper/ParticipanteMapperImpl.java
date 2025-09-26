@@ -1,5 +1,6 @@
 package org.todoporunalma.api.infrastructure.mapper;
 
+import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 import org.todoporunalma.api.domain.model.Participante;
@@ -7,7 +8,7 @@ import org.todoporunalma.api.infrastructure.entity.ParticipanteEntity;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-26T16:35:21-0500",
+    date = "2025-09-26T17:55:21-0500",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -31,10 +32,11 @@ public class ParticipanteMapperImpl implements ParticipanteMapper {
         participante.fechaIngreso( entity.getFechaIngreso() );
         participante.fechaNacimiento( entity.getFechaNacimiento() );
         participante.genero( entity.getGenero() );
-        participante.id( entity.getId() );
         participante.nombres( entity.getNombres() );
         participante.observaciones( entity.getObservaciones() );
-        participante.sedeId( entity.getSedeId() );
+        if ( entity.getSedeId() != null ) {
+            participante.sedeId( entity.getSedeId().toString() );
+        }
         participante.telefono( entity.getTelefono() );
         participante.updatedAt( entity.getUpdatedAt() );
 
@@ -58,10 +60,11 @@ public class ParticipanteMapperImpl implements ParticipanteMapper {
         participanteEntity.fechaIngreso( domain.getFechaIngreso() );
         participanteEntity.fechaNacimiento( domain.getFechaNacimiento() );
         participanteEntity.genero( domain.getGenero() );
-        participanteEntity.id( domain.getId() );
         participanteEntity.nombres( domain.getNombres() );
         participanteEntity.observaciones( domain.getObservaciones() );
-        participanteEntity.sedeId( domain.getSedeId() );
+        if ( domain.getSedeId() != null ) {
+            participanteEntity.sedeId( UUID.fromString( domain.getSedeId() ) );
+        }
         participanteEntity.telefono( domain.getTelefono() );
         participanteEntity.updatedAt( domain.getUpdatedAt() );
 

@@ -7,14 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Participante {
-    private UUID id;
+    private String id;
     private String documento;
     private String nombres;
     private String apellidos;
@@ -25,7 +23,7 @@ public class Participante {
     private String email;
     private String direccion;
     private EstadoParticipante estado;
-    private UUID sedeId;
+    private String sedeId;
     private LocalDate fechaIngreso;
     private String observaciones;
     private LocalDateTime createdAt;

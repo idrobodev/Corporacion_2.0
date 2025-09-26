@@ -8,14 +8,13 @@ import org.todoporunalma.api.domain.model.Participante;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ParticipanteDto {
-    private UUID id;
+    private String id;
     private String documento;
     private String nombres;
     private String apellidos;
@@ -26,7 +25,7 @@ public class ParticipanteDto {
     private String email;
     private String direccion;
     private Participante.EstadoParticipante estado;
-    private UUID sedeId;
+    private String sedeId;
     private String sedeNombre; // For joined queries
     private LocalDate fechaIngreso;
     private String observaciones;

@@ -119,9 +119,10 @@ CREATE TABLE IF NOT EXISTS usuarios (
 -- Propósito: Registro de personas en proceso de rehabilitación
 -- Usos: Seguimiento individual, reportes, asignación a sedes
 -- Relaciones: FK a sedes, FK desde mensualidades y archivos
+-- NOTA: ID es el documento de identidad (cedula) en lugar de UUID
 -- ====================================================================================================
 CREATE TABLE IF NOT EXISTS participantes (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id VARCHAR(20) PRIMARY KEY,
     documento VARCHAR(20) UNIQUE NOT NULL,
     nombres VARCHAR(255) NOT NULL,
     apellidos VARCHAR(255) NOT NULL,
@@ -134,7 +135,7 @@ CREATE TABLE IF NOT EXISTS participantes (
     direccion TEXT,
     estado VARCHAR(20) DEFAULT 'ACTIVO'
         CHECK (estado IN ('ACTIVO', 'INACTIVO')),
-    sede_id UUID REFERENCES sedes(id),
+    sede_id VARCHAR(20) REFERENCES sedes(id),
     fecha_ingreso DATE DEFAULT CURRENT_DATE,
     observaciones TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -149,7 +150,7 @@ CREATE TABLE IF NOT EXISTS participantes (
 -- ====================================================================================================
 CREATE TABLE IF NOT EXISTS mensualidades (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    participante_id UUID REFERENCES participantes(id) ON DELETE CASCADE,
+    participante_id VARCHAR(20) REFERENCES participantes(id) ON DELETE CASCADE,
     mes INTEGER NOT NULL CHECK (mes BETWEEN 1 AND 12),
     anio INTEGER NOT NULL,
     monto DECIMAL(10,2) NOT NULL DEFAULT 0,
@@ -178,7 +179,7 @@ CREATE TABLE IF NOT EXISTS archivos (
     mime_type VARCHAR(100),
     tamaño BIGINT,
     carpeta VARCHAR(255),
-    participante_id UUID REFERENCES participantes(id),
+    participante_id VARCHAR(20) REFERENCES participantes(id),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -283,8 +284,9 @@ ON CONFLICT (email) DO NOTHING;
 -- Notas: Datos ficticios para testing y demostración
 -- Mejora posible: Implementar importación masiva desde Excel/CSV
 -- ====================================================================================================
-INSERT INTO participantes (documento, nombres, apellidos, fecha_nacimiento, telefono, email, direccion, sede_id, fecha_ingreso, observaciones)
+INSERT INTO participantes (id, documento, nombres, apellidos, fecha_nacimiento, telefono, email, direccion, sede_id, fecha_ingreso, observaciones)
 SELECT
+    '12345678',
     '12345678',
     'Juan Carlos',
     'Pérez García',
@@ -298,8 +300,9 @@ SELECT
 FROM sedes s WHERE s.nombre = 'Sede Masculina Bello Principal' LIMIT 1
 ON CONFLICT (documento) DO NOTHING;
 
-INSERT INTO participantes (documento, nombres, apellidos, fecha_nacimiento, telefono, email, direccion, sede_id, fecha_ingreso, observaciones)
+INSERT INTO participantes (id, documento, nombres, apellidos, fecha_nacimiento, telefono, email, direccion, sede_id, fecha_ingreso, observaciones)
 SELECT
+    '87654321',
     '87654321',
     'María Elena',
     'González López',
