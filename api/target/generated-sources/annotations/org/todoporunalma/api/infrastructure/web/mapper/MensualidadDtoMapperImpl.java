@@ -7,7 +7,7 @@ import org.todoporunalma.api.infrastructure.web.dto.MensualidadDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-24T10:10:03-0500",
+    date = "2025-09-26T15:49:44-0500",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component

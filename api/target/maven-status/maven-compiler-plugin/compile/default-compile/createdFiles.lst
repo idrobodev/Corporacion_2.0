@@ -33,6 +33,7 @@ org/todoporunalma/api/infrastructure/web/controller/MensualidadController.class
 org/todoporunalma/api/infrastructure/web/dto/ParticipanteDto$ParticipanteDtoBuilder.class
 org/todoporunalma/api/infrastructure/web/dto/AuthRequest.class
 org/todoporunalma/api/infrastructure/mapper/ArchivoMapper.class
+org/todoporunalma/api/infrastructure/web/controller/FileController.class
 org/todoporunalma/api/infrastructure/security/JwtAuthenticationFilter.class
 org/todoporunalma/api/infrastructure/web/mapper/MensualidadDtoMapperImpl.class
 org/todoporunalma/api/infrastructure/entity/SedeEntity.class
@@ -61,6 +62,7 @@ org/todoporunalma/api/infrastructure/config/WebConfig.class
 org/todoporunalma/api/domain/model/Mensualidad$EstadoMensualidad.class
 org/todoporunalma/api/infrastructure/adapter/SedeRepositoryAdapter.class
 org/todoporunalma/api/infrastructure/entity/UsuarioEntity$UsuarioEntityBuilder.class
+org/todoporunalma/api/application/service/ArchivoService.class
 org/todoporunalma/api/infrastructure/web/mapper/SedeDtoMapperImpl.class
 org/todoporunalma/api/domain/port/SedeRepository.class
 org/todoporunalma/api/infrastructure/adapter/ParticipanteRepositoryAdapter.class

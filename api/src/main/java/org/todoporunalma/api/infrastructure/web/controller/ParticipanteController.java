@@ -20,11 +20,11 @@ import org.todoporunalma.api.infrastructure.web.dto.ApiResponse;
 import org.todoporunalma.api.infrastructure.web.dto.ParticipanteDto;
 import org.todoporunalma.api.infrastructure.web.mapper.ParticipanteDtoMapper;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+// import org.apache.pdfbox.pdmodel.PDDocument;
+// import org.apache.pdfbox.pdmodel.PDPage;
+// import org.apache.pdfbox.pdmodel.PDPageContentStream;
+// import org.apache.pdfbox.pdmodel.font.PDType1Font;
+// import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 
 import java.io.ByteArrayOutputStream;
 import java.time.format.DateTimeFormatter;
