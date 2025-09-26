@@ -142,7 +142,4 @@ public class ParticipanteController {
                     .body(ApiResponse.error("Error al eliminar participante: " + e.getMessage()));
         }
     }
-
-    // PDF export functionality temporarily disabled due to dependency issues
-    // TODO: Re-implement PDF export with proper PDFBox configuration
 }

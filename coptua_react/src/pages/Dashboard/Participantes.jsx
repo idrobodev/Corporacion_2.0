@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { dbService } from "../../services/database";
+import jsPDF from 'jspdf';
 
 const Participantes = () => {
   const [participantes, setParticipantes] = useState([]); // Asegurar que siempre sea array
@@ -126,51 +127,112 @@ const Participantes = () => {
 
   const handleExportPDF = async () => {
     try {
-      // Prepare filter parameters
-      const exportFilters = {
-        sede: filtros.sede,
-        estado: filtros.estado,
-        busqueda: filtros.busqueda
-      };
+      console.log('🔄 Generando PDF de participantes con filtros:', filtros);
 
-      console.log('🔄 Exportando participantes a PDF con filtros:', exportFilters);
+      // Create new PDF document
+      const doc = new jsPDF();
 
-      // Call the API to generate PDF
-      const response = await fetch('/api/participantes/export-pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        },
-        body: JSON.stringify(exportFilters)
-      });
+      // Set font
+      doc.setFont('helvetica');
 
-      if (!response.ok) {
-        throw new Error('Error al generar el PDF');
+      // Title
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Lista de Participantes', 20, 30);
+
+      // Filters info
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      let yPosition = 50;
+
+      const sedeText = filtros.sede === 'Todas' ? 'Todas las sedes' : `Sede: ${filtros.sede}`;
+      const estadoText = filtros.estado === 'Todos' ? 'Todos los estados' : `Estado: ${filtros.estado}`;
+      const busquedaText = filtros.busqueda ? `Búsqueda: "${filtros.busqueda}"` : '';
+
+      doc.text(`Filtros aplicados:`, 20, yPosition);
+      yPosition += 10;
+      doc.text(`- ${sedeText}`, 30, yPosition);
+      yPosition += 8;
+      doc.text(`- ${estadoText}`, 30, yPosition);
+      yPosition += 8;
+      if (busquedaText) {
+        doc.text(`- ${busquedaText}`, 30, yPosition);
+        yPosition += 8;
       }
 
-      // Download the PDF
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
+      // Date
+      const currentDate = new Date().toLocaleDateString('es-ES');
+      doc.text(`Fecha de generación: ${currentDate}`, 20, yPosition);
+      yPosition += 20;
 
-      // Generate filename with current date and filters
+      // Table headers
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text('Nombre', 20, yPosition);
+      doc.text('Edad', 100, yPosition);
+      doc.text('Teléfono', 130, yPosition);
+      doc.text('Sede', 170, yPosition);
+      yPosition += 10;
+
+      // Draw line under headers
+      doc.line(20, yPosition - 2, 190, yPosition - 2);
+      yPosition += 5;
+
+      // Table data
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+
+      filteredParticipantes.forEach((participante, index) => {
+        if (yPosition > 270) { // New page if needed
+          doc.addPage();
+          yPosition = 30;
+        }
+
+        const nombre = `${participante.nombres || ''} ${participante.apellidos || ''}`.trim();
+        const edad = participante.edad ? `${participante.edad}` : '';
+        const telefono = participante.telefono || '';
+        const sede = participante.sede || '';
+
+        doc.text(nombre, 20, yPosition);
+        doc.text(edad, 100, yPosition);
+        doc.text(telefono, 130, yPosition);
+        doc.text(sede, 170, yPosition);
+
+        yPosition += 8;
+      });
+
+      // Statistics at the bottom
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = 30;
+      }
+
+      yPosition += 10;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text('Estadísticas:', 20, yPosition);
+      yPosition += 10;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text(`Total de participantes: ${filteredParticipantes.length}`, 30, yPosition);
+      yPosition += 8;
+      doc.text(`Activos: ${filteredParticipantes.filter(p => p.estado === 'Activo').length}`, 30, yPosition);
+      yPosition += 8;
+      doc.text(`Inactivos: ${filteredParticipantes.filter(p => p.estado === 'Inactivo').length}`, 30, yPosition);
+
+      // Generate filename
       const date = new Date().toISOString().split('T')[0];
-      const sedeName = filtros.sede === 'Todas' ? 'todas-sedes' : filtros.sede.toLowerCase();
+      const sedeName = filtros.sede === 'Todas' ? 'todas-sedes' : filtros.sede.toLowerCase().replace(' ', '-');
       const filename = `participantes-${sedeName}-${date}.pdf`;
 
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
+      // Save the PDF
+      doc.save(filename);
 
-      console.log('✅ PDF exportado exitosamente');
+      console.log('✅ PDF generado exitosamente');
     } catch (error) {
-      console.error('❌ Error exportando PDF:', error);
-      // You could add a notification here
-      alert('Error al exportar PDF: ' + error.message);
+      console.error('❌ Error generando PDF:', error);
+      alert('Error al generar PDF: ' + error.message);
     }
   };
 
