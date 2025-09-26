@@ -37,7 +37,11 @@ public class ParticipanteEntity {
     
     @Column(name = "fecha_nacimiento")
     private LocalDate fechaNacimiento;
-    
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Participante.GeneroParticipante genero = Participante.GeneroParticipante.MASCULINO;
+
     private String telefono;
     
     private String email;

@@ -127,6 +127,8 @@ CREATE TABLE IF NOT EXISTS participantes (
     apellidos VARCHAR(255) NOT NULL,
     fecha_nacimiento DATE,
     edad INTEGER,
+    genero VARCHAR(20) DEFAULT 'MASCULINO'
+        CHECK (genero IN ('MASCULINO', 'FEMENINO')),
     telefono VARCHAR(20),
     email VARCHAR(100),
     direccion TEXT,

@@ -21,6 +21,7 @@ public class ParticipanteDto {
     private String apellidos;
     private LocalDate fechaNacimiento;
     private Integer edad;
+    private Participante.GeneroParticipante genero;
     private String telefono;
     private String email;
     private String direccion;

@@ -20,6 +20,7 @@ public class Participante {
     private String apellidos;
     private LocalDate fechaNacimiento;
     private Integer edad;
+    private GeneroParticipante genero;
     private String telefono;
     private String email;
     private String direccion;
@@ -32,5 +33,9 @@ public class Participante {
 
     public enum EstadoParticipante {
         ACTIVO, INACTIVO
+    }
+
+    public enum GeneroParticipante {
+        MASCULINO, FEMENINO
     }
 }

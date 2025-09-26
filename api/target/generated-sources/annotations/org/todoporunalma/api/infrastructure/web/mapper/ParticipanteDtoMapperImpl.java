@@ -7,7 +7,7 @@ import org.todoporunalma.api.infrastructure.web.dto.ParticipanteDto;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-09-26T15:49:44-0500",
+    date = "2025-09-26T16:35:46-0500",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.43.0.v20250819-1513, environment: Java 21.0.8 (Eclipse Adoptium)"
 )
 @Component
@@ -30,6 +30,7 @@ public class ParticipanteDtoMapperImpl implements ParticipanteDtoMapper {
         participanteDto.estado( domain.getEstado() );
         participanteDto.fechaIngreso( domain.getFechaIngreso() );
         participanteDto.fechaNacimiento( domain.getFechaNacimiento() );
+        participanteDto.genero( domain.getGenero() );
         participanteDto.id( domain.getId() );
         participanteDto.nombres( domain.getNombres() );
         participanteDto.observaciones( domain.getObservaciones() );
@@ -57,6 +58,7 @@ public class ParticipanteDtoMapperImpl implements ParticipanteDtoMapper {
         participante.estado( dto.getEstado() );
         participante.fechaIngreso( dto.getFechaIngreso() );
         participante.fechaNacimiento( dto.getFechaNacimiento() );
+        participante.genero( dto.getGenero() );
         participante.id( dto.getId() );
         participante.nombres( dto.getNombres() );
         participante.observaciones( dto.getObservaciones() );

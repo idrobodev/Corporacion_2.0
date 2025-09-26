@@ -9,6 +9,7 @@ const Participantes = () => {
   const [error, setError] = useState(null);
   const [filtros, setFiltros] = useState({
     sede: "Todas",
+    genero: "Todos",
     estado: "Todos",
     busqueda: ""
   });
@@ -78,6 +79,9 @@ const Participantes = () => {
 
     if (filtros.sede !== "Todas") {
       filtered = filtered.filter(p => p.sede && p.sede.toLowerCase().includes(filtros.sede.toLowerCase()));
+    }
+    if (filtros.genero !== "Todos") {
+      filtered = filtered.filter(p => p.genero === filtros.genero);
     }
     if (filtros.estado !== "Todos") {
       filtered = filtered.filter(p => p.estado === filtros.estado);
@@ -215,6 +219,7 @@ const Participantes = () => {
           <div class="filters">
             <h3>Filtros aplicados:</h3>
             <p><strong>Sede:</strong> ${filtros.sede === 'Todas' ? 'Todas las sedes' : filtros.sede}</p>
+            <p><strong>Género:</strong> ${filtros.genero === 'Todos' ? 'Todos los géneros' : filtros.genero}</p>
             <p><strong>Estado:</strong> ${filtros.estado === 'Todos' ? 'Todos los estados' : filtros.estado}</p>
             ${filtros.busqueda ? `<p><strong>Búsqueda:</strong> "${filtros.busqueda}"</p>` : ''}
           </div>
@@ -224,6 +229,7 @@ const Participantes = () => {
               <tr>
                 <th>Nombre</th>
                 <th>Edad</th>
+                <th>Género</th>
                 <th>Teléfono</th>
                 <th>Sede</th>
                 <th>Estado</th>
@@ -234,6 +240,7 @@ const Participantes = () => {
                 <tr>
                   <td>${participante.nombre || 'N/A'}</td>
                   <td>${participante.edad || 'N/A'}</td>
+                  <td>${participante.genero || 'N/A'}</td>
                   <td>${participante.telefono || 'N/A'}</td>
                   <td>${participante.sede || 'N/A'}</td>
                   <td>${participante.estado || 'N/A'}</td>
@@ -305,7 +312,7 @@ const Participantes = () => {
     }>
       {/* Filtros */}
       <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Sede</label>
             <select
@@ -319,7 +326,20 @@ const Participantes = () => {
               <option value="Apartadó">Apartadó</option>
             </select>
           </div>
-          
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Género</label>
+            <select
+              value={filtros.genero}
+              onChange={(e) => setFiltros({...filtros, genero: e.target.value})}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value="Todos">Todos los Géneros</option>
+              <option value="MASCULINO">Masculino</option>
+              <option value="FEMENINO">Femenino</option>
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
             <select
@@ -435,6 +455,9 @@ const Participantes = () => {
                     Participante
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Género
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Sede
                   </th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -462,6 +485,9 @@ const Participantes = () => {
                           </div>
                         </div>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {participante.genero === 'MASCULINO' ? 'Masculino' : participante.genero === 'FEMENINO' ? 'Femenino' : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {participante.sede}
