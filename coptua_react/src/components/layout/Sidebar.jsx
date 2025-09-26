@@ -61,6 +61,13 @@ const Sidebar = ({ isOpen = false, onToggle = () => {}, isCollapsed = false, onT
       badge: null
     },
     {
+      id: 'sedes',
+      icon: 'fas fa-building',
+      label: 'Sedes',
+      link: '/sedes',
+      badge: null
+    },
+    {
       id: 'configuracion',
       icon: 'fas fa-cog',
       label: 'Configuración',

@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound/NotFound";
 import Programs from "./pages/Programs/Programs";
 import Donate from "./pages/Donate/Donate";
 import Formatos from "./pages/Dashboard/Formatos";
+import Sedes from "./pages/Dashboard/Sedes";
 
 // Component to conditionally render header and footer
 const AppContent = () => {
@@ -25,7 +26,8 @@ const AppContent = () => {
                           location.pathname.startsWith('/participantes') ||
                           location.pathname.startsWith('/financiero') ||
                           location.pathname.startsWith('/configuracion') ||
-                          location.pathname.startsWith('/formatos');
+                          location.pathname.startsWith('/formatos') ||
+                          location.pathname.startsWith('/sedes');
 
   return (
     <>
@@ -73,6 +75,11 @@ const AppContent = () => {
           <PrivateRoute path="/formatos">
             <SidebarProvider>
               <Formatos />
+            </SidebarProvider>
+          </PrivateRoute>
+          <PrivateRoute path="/sedes">
+            <SidebarProvider>
+              <Sedes />
             </SidebarProvider>
           </PrivateRoute>
           <Route path="*">
