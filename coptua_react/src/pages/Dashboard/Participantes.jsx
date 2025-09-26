@@ -124,6 +124,56 @@ const Participantes = () => {
     }
   };
 
+  const handleExportPDF = async () => {
+    try {
+      // Prepare filter parameters
+      const exportFilters = {
+        sede: filtros.sede,
+        estado: filtros.estado,
+        busqueda: filtros.busqueda
+      };
+
+      console.log('🔄 Exportando participantes a PDF con filtros:', exportFilters);
+
+      // Call the API to generate PDF
+      const response = await fetch('/api/participantes/export-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify(exportFilters)
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al generar el PDF');
+      }
+
+      // Download the PDF
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      // Generate filename with current date and filters
+      const date = new Date().toISOString().split('T')[0];
+      const sedeName = filtros.sede === 'Todas' ? 'todas-sedes' : filtros.sede.toLowerCase();
+      const filename = `participantes-${sedeName}-${date}.pdf`;
+
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      console.log('✅ PDF exportado exitosamente');
+    } catch (error) {
+      console.error('❌ Error exportando PDF:', error);
+      // You could add a notification here
+      alert('Error al exportar PDF: ' + error.message);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout title="Participantes" subtitle="Gestión de participantes" loading={true} loadingText="Cargando participantes..." />
@@ -144,13 +194,23 @@ const Participantes = () => {
 
   return (
     <DashboardLayout title="Gestión de Participantes" subtitle="Administra los participantes de la fundación" extraActions={
-      <button 
-        onClick={() => abrirModal('crear', null)}
-        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        <i className="fas fa-plus mr-2"></i>
-        Nuevo Participante
-      </button>
+      <div className="flex space-x-3">
+        <button
+          onClick={() => handleExportPDF()}
+          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          title="Exportar lista filtrada a PDF"
+        >
+          <i className="fas fa-file-pdf mr-2"></i>
+          Exportar PDF
+        </button>
+        <button
+          onClick={() => abrirModal('crear', null)}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          <i className="fas fa-plus mr-2"></i>
+          Nuevo Participante
+        </button>
+      </div>
     }>
       {/* Filtros */}
       <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">

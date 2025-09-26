@@ -211,11 +211,11 @@ public class FileController {
     @Operation(summary = "Crear carpeta", description = "Crea una nueva carpeta")
     public ResponseEntity<ApiResponse<String>> createFolder(
             @RequestBody Map<String, String> request) {
-        
+
         try {
             String folderName = request.get("name");
             String parentPath = request.get("parentPath");
-            
+
             if (folderName == null || folderName.trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                     .body(ApiResponse.error("El nombre de la carpeta es requerido"));
@@ -225,7 +225,7 @@ public class FileController {
             if (parentPath != null && !parentPath.isEmpty()) {
                 uploadPath = uploadPath.resolve(parentPath);
             }
-            
+
             Path folderPath = uploadPath.resolve(folderName.trim());
             Files.createDirectories(folderPath);
 
@@ -236,6 +236,109 @@ public class FileController {
             log.error("Error al crear carpeta", e);
             return ResponseEntity.internalServerError()
                 .body(ApiResponse.error("Error al crear carpeta: " + e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/folder/{path}")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Eliminar carpeta", description = "Elimina una carpeta y todo su contenido")
+    public ResponseEntity<ApiResponse<String>> deleteFolder(@PathVariable String path) {
+        try {
+            Path folderPath = getUploadPath().resolve(path).normalize();
+
+            if (!Files.exists(folderPath) || !Files.isDirectory(folderPath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Verificar que la carpeta esté vacía antes de eliminar
+            try (var stream = Files.list(folderPath)) {
+                if (stream.findFirst().isPresent()) {
+                    return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("La carpeta no está vacía. Elimine primero todos los archivos y subcarpetas."));
+                }
+            }
+
+            // Eliminar carpeta
+            Files.delete(folderPath);
+
+            log.info("Carpeta eliminada: {}", folderPath);
+            return ResponseEntity.ok(ApiResponse.success("Carpeta eliminada exitosamente"));
+
+        } catch (IOException e) {
+            log.error("Error al eliminar carpeta", e);
+            return ResponseEntity.internalServerError()
+                .body(ApiResponse.error("Error al eliminar carpeta: " + e.getMessage()));
+        }
+    }
+
+    @PutMapping("/folder/rename")
+    @PreAuthorize("hasRole('ADMINISTRADOR')")
+    @Operation(summary = "Renombrar carpeta", description = "Cambia el nombre de una carpeta")
+    public ResponseEntity<ApiResponse<String>> renameFolder(@RequestBody Map<String, String> request) {
+        try {
+            String oldName = request.get("oldName");
+            String newName = request.get("newName");
+            String parentPath = request.get("parentPath");
+
+            if (oldName == null || oldName.trim().isEmpty() ||
+                newName == null || newName.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Los nombres antiguo y nuevo son requeridos"));
+            }
+
+            Path uploadPath = getUploadPath();
+            if (parentPath != null && !parentPath.isEmpty()) {
+                uploadPath = uploadPath.resolve(parentPath);
+            }
+
+            Path oldFolderPath = uploadPath.resolve(oldName.trim());
+            Path newFolderPath = uploadPath.resolve(newName.trim());
+
+            if (!Files.exists(oldFolderPath) || !Files.isDirectory(oldFolderPath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            if (Files.exists(newFolderPath)) {
+                return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Ya existe una carpeta con ese nombre"));
+            }
+
+            // Renombrar carpeta
+            Files.move(oldFolderPath, newFolderPath);
+
+            log.info("Carpeta renombrada: {} -> {}", oldFolderPath, newFolderPath);
+            return ResponseEntity.ok(ApiResponse.success("Carpeta renombrada exitosamente"));
+
+        } catch (IOException e) {
+            log.error("Error al renombrar carpeta", e);
+            return ResponseEntity.internalServerError()
+                .body(ApiResponse.error("Error al renombrar carpeta: " + e.getMessage()));
+        }
+    }
+
+    @GetMapping("/download-url/{path}")
+    @PreAuthorize("hasAnyRole('ADMINISTRADOR', 'CONSULTA')")
+    @Operation(summary = "Obtener URL de descarga", description = "Obtiene la URL para descargar un archivo")
+    public ResponseEntity<ApiResponse<Map<String, String>>> getDownloadUrl(@PathVariable String path) {
+        try {
+            Path filePath = getUploadPath().resolve(path).normalize();
+
+            if (!Files.exists(filePath) || Files.isDirectory(filePath)) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Para archivos locales, devolver la ruta relativa para el endpoint de descarga
+            String downloadUrl = "/api/files/download/" + path;
+
+            Map<String, String> response = new HashMap<>();
+            response.put("url", downloadUrl);
+
+            return ResponseEntity.ok(ApiResponse.success(response));
+
+        } catch (Exception e) {
+            log.error("Error al obtener URL de descarga", e);
+            return ResponseEntity.internalServerError()
+                .body(ApiResponse.error("Error al obtener URL de descarga: " + e.getMessage()));
         }
     }
 }

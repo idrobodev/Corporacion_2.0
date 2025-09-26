@@ -2,6 +2,23 @@ import React, { useState, useEffect, useMemo } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { dbService } from "../../services/database";
 
+// Simple Map Component
+const MapPlaceholder = ({ address, className = "" }) => {
+  return (
+    <div className={`bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center relative overflow-hidden ${className}`}>
+      <div className="absolute inset-0 bg-green-500 opacity-10"></div>
+      <div className="text-center">
+        <i className="fas fa-map-marked-alt text-green-600 text-3xl mb-2"></i>
+        <p className="text-xs text-gray-600 font-medium">Mapa de Ubicación</p>
+        <p className="text-xs text-gray-500 mt-1 px-2">{address?.substring(0, 30)}...</p>
+      </div>
+      <div className="absolute top-2 right-2">
+        <i className="fas fa-external-link-alt text-gray-400 text-xs"></i>
+      </div>
+    </div>
+  );
+};
+
 const Sedes = () => {
   const [sedes, setSedes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -171,10 +188,23 @@ const Sedes = () => {
             />
           </div>
 
-          <div className="flex items-end">
-            <button className="w-full bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors">
+          <div className="flex items-end space-x-2">
+            <button
+              onClick={() => {
+                // Filters are applied automatically via useMemo
+                console.log('Filtros aplicados:', filtros);
+              }}
+              className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            >
               <i className="fas fa-search mr-2"></i>
-              Filtrar
+              Aplicar Filtros
+            </button>
+            <button
+              onClick={() => setFiltros({ estado: "Todos", busqueda: "" })}
+              className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
+              title="Limpiar filtros"
+            >
+              <i className="fas fa-times"></i>
             </button>
           </div>
         </div>
@@ -219,102 +249,127 @@ const Sedes = () => {
         </div>
       </div>
 
-      {/* Tabla de Sedes */}
+      {/* Grid de Sedes */}
       <div className="px-6 py-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-800">Lista de Sedes</h3>
-          </div>
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-800">Lista de Sedes</h3>
+          <p className="text-sm text-gray-600 mt-1">Haz clic en una sede para ver más detalles</p>
+        </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Sede
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Dirección
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredSedes.map((sede) => (
-                  <tr key={sede.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                          <i className="fas fa-building text-blue-600"></i>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {sede.nombre}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {sede.telefono}
-                          </div>
-                        </div>
+        {filteredSedes.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <i className="fas fa-building text-gray-300 text-4xl mb-4"></i>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No se encontraron sedes</h3>
+            <p className="text-gray-500">No hay sedes que coincidan con los filtros aplicados.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredSedes.map((sede) => (
+              <div
+                key={sede.id}
+                className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                onClick={() => abrirModal('ver', sede)}
+              >
+                {/* Map */}
+                <MapPlaceholder
+                  address={sede.direccion}
+                  className="h-32 rounded-t-xl"
+                />
+
+                {/* Card Content */}
+                <div className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <i className="fas fa-building text-blue-600 text-lg"></i>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {sede.direccion}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                          {sede.nombre}
+                        </h3>
+                        <p className="text-sm text-gray-500">{sede.tipo || 'Principal'}</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleEstado(sede.id, sede.estado === 'Activa' ? 'Inactiva' : 'Activa');
+                      }}
+                      className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full cursor-pointer transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${getEstadoColor(sede.estado)} hover:opacity-80`}
+                      aria-label={`Cambiar estado de ${sede.nombre}`}
+                      title={`Cambiar estado a ${sede.estado === 'Activa' ? 'Inactiva' : 'Activa'}`}
+                    >
+                      {sede.estado}
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-start">
+                      <i className="fas fa-map-marker-alt text-gray-400 mt-1 mr-3 flex-shrink-0"></i>
+                      <p className="text-sm text-gray-600 line-clamp-2">{sede.direccion}</p>
+                    </div>
+
+                    {sede.telefono && (
+                      <div className="flex items-center">
+                        <i className="fas fa-phone text-gray-400 mr-3 flex-shrink-0"></i>
+                        <p className="text-sm text-gray-600">{sede.telefono}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        abrirModal('ver', sede);
+                      }}
+                      className="flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                    >
+                      <i className="fas fa-eye mr-2"></i>
+                      Ver detalles
+                    </button>
+
+                    <div className="relative dropdown-container">
                       <button
-                        onClick={() => toggleEstado(sede.id, sede.estado === 'Activa' ? 'Inactiva' : 'Activa')}
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full cursor-pointer transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${getEstadoColor(sede.estado)} hover:opacity-80`}
-                        aria-label={`Cambiar estado de ${sede.nombre} a ${sede.estado === 'Activa' ? 'Inactiva' : 'Activa'}`}
-                        title={`Cambiar estado a ${sede.estado === 'Activa' ? 'Inactiva' : 'Activa'}`}
+                        className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDropdownAbierto(dropdownAbierto === sede.id ? null : sede.id);
+                        }}
+                        aria-label="Opciones de la sede"
                       >
-                        {sede.estado}
+                        <i className="fas fa-ellipsis-v"></i>
                       </button>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="relative dropdown-container">
+                      <div className={`absolute right-0 bottom-full mb-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 ${dropdownAbierto === sede.id ? 'block' : 'hidden'}`}>
                         <button
-                          className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-50 transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setDropdownAbierto(dropdownAbierto === sede.id ? null : sede.id);
+                            handleActionClick('ver', sede);
+                            setDropdownAbierto(null);
                           }}
-                          aria-label="Opciones de la sede"
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                         >
-                          <i className="fas fa-ellipsis-v"></i>
+                          <i className="fas fa-eye mr-2"></i>Ver detalles
                         </button>
-                        <div className={`absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10 ${dropdownAbierto === sede.id ? 'block' : 'hidden'}`}>
-                          <button
-                            onClick={() => {
-                              handleActionClick('ver', sede);
-                              setDropdownAbierto(null);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          >
-                            <i className="fas fa-eye mr-2"></i>Ver detalles
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleActionClick('editar', sede);
-                              setDropdownAbierto(null);
-                            }}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                          >
-                            <i className="fas fa-edit mr-2"></i>Editar
-                          </button>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleActionClick('editar', sede);
+                            setDropdownAbierto(null);
+                          }}
+                          className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                          <i className="fas fa-edit mr-2"></i>Editar
+                        </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
 
       {/* Modales */}
