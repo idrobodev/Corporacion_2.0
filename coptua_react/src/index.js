@@ -4,8 +4,8 @@ import App from "./App";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
 
-// Guard: ensure process.env exists in browser to avoid "process is not defined" errors
-if (typeof window !== 'undefined' && typeof window.process === 'undefined') {
+// Polyfill for process.env in browser
+if (typeof window !== 'undefined' && !window.process) {
   window.process = { env: {} };
 }
 

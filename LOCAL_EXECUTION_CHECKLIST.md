@@ -81,7 +81,7 @@ make health
 
 ### ✅ **URLs de Desarrollo**
 ```
-🌐 Frontend:    http://localhost:3001
+🌐 Frontend:    http://localhost:3000
 🔧 API:         http://localhost:8080/api
 📚 API Docs:    http://localhost:8080/api/swagger-ui.html
 🗄️ Base Datos:  localhost:5432 (desde host)

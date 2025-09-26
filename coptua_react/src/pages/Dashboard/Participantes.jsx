@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import DashboardLayout from "../../components/layout/DashboardLayout";
 import { dbService } from "../../services/database";
-import jsPDF from 'jspdf';
+// import jsPDF from 'jspdf'; // Temporarily disabled - not available in Docker dev
 
 const Participantes = () => {
   const [participantes, setParticipantes] = useState([]); // Asegurar que siempre sea array
@@ -125,115 +125,144 @@ const Participantes = () => {
     }
   };
 
-  const handleExportPDF = async () => {
-    try {
-      console.log('🔄 Generando PDF de participantes con filtros:', filtros);
+  const handleExportPDF = () => {
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    const currentDate = new Date().toLocaleDateString('es-ES');
 
-      // Create new PDF document
-      const doc = new jsPDF();
+    // Generate HTML content for PDF
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Lista de Participantes - ${currentDate}</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              margin: 20px;
+              color: #333;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #333;
+              padding-bottom: 20px;
+            }
+            .header h1 {
+              color: #2563eb;
+              margin: 0;
+              font-size: 24px;
+            }
+            .filters {
+              margin-bottom: 20px;
+              background: #f8f9fa;
+              padding: 15px;
+              border-radius: 5px;
+            }
+            .filters h3 {
+              margin: 0 0 10px 0;
+              color: #495057;
+            }
+            .filters p {
+              margin: 5px 0;
+              font-size: 14px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            th, td {
+              border: 1px solid #ddd;
+              padding: 8px 12px;
+              text-align: left;
+            }
+            th {
+              background-color: #f8f9fa;
+              font-weight: bold;
+              color: #495057;
+            }
+            tr:nth-child(even) {
+              background-color: #f9f9f9;
+            }
+            .stats {
+              margin-top: 30px;
+              background: #e3f2fd;
+              padding: 15px;
+              border-radius: 5px;
+            }
+            .stats h3 {
+              margin: 0 0 10px 0;
+              color: #1976d2;
+            }
+            .stats p {
+              margin: 5px 0;
+              font-size: 14px;
+            }
+            @media print {
+              body { margin: 0; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Lista de Participantes</h1>
+            <p>Corporación Todo por un Alma</p>
+            <p>Fecha de generación: ${currentDate}</p>
+          </div>
 
-      // Set font
-      doc.setFont('helvetica');
+          <div class="filters">
+            <h3>Filtros aplicados:</h3>
+            <p><strong>Sede:</strong> ${filtros.sede === 'Todas' ? 'Todas las sedes' : filtros.sede}</p>
+            <p><strong>Estado:</strong> ${filtros.estado === 'Todos' ? 'Todos los estados' : filtros.estado}</p>
+            ${filtros.busqueda ? `<p><strong>Búsqueda:</strong> "${filtros.busqueda}"</p>` : ''}
+          </div>
 
-      // Title
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Lista de Participantes', 20, 30);
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Teléfono</th>
+                <th>Sede</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredParticipantes.map(participante => `
+                <tr>
+                  <td>${participante.nombre || 'N/A'}</td>
+                  <td>${participante.edad || 'N/A'}</td>
+                  <td>${participante.telefono || 'N/A'}</td>
+                  <td>${participante.sede || 'N/A'}</td>
+                  <td>${participante.estado || 'N/A'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
 
-      // Filters info
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'normal');
-      let yPosition = 50;
+          <div class="stats">
+            <h3>Estadísticas:</h3>
+            <p><strong>Total de participantes:</strong> ${filteredParticipantes.length}</p>
+            <p><strong>Activos:</strong> ${filteredParticipantes.filter(p => p.estado === 'Activo').length}</p>
+            <p><strong>Inactivos:</strong> ${filteredParticipantes.filter(p => p.estado === 'Inactivo').length}</p>
+          </div>
 
-      const sedeText = filtros.sede === 'Todas' ? 'Todas las sedes' : `Sede: ${filtros.sede}`;
-      const estadoText = filtros.estado === 'Todos' ? 'Todos los estados' : `Estado: ${filtros.estado}`;
-      const busquedaText = filtros.busqueda ? `Búsqueda: "${filtros.busqueda}"` : '';
+          <script>
+            window.onload = function() {
+              window.print();
+              setTimeout(function() {
+                window.close();
+              }, 1000);
+            }
+          </script>
+        </body>
+      </html>
+    `;
 
-      doc.text(`Filtros aplicados:`, 20, yPosition);
-      yPosition += 10;
-      doc.text(`- ${sedeText}`, 30, yPosition);
-      yPosition += 8;
-      doc.text(`- ${estadoText}`, 30, yPosition);
-      yPosition += 8;
-      if (busquedaText) {
-        doc.text(`- ${busquedaText}`, 30, yPosition);
-        yPosition += 8;
-      }
-
-      // Date
-      const currentDate = new Date().toLocaleDateString('es-ES');
-      doc.text(`Fecha de generación: ${currentDate}`, 20, yPosition);
-      yPosition += 20;
-
-      // Table headers
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text('Nombre', 20, yPosition);
-      doc.text('Edad', 100, yPosition);
-      doc.text('Teléfono', 130, yPosition);
-      doc.text('Sede', 170, yPosition);
-      yPosition += 10;
-
-      // Draw line under headers
-      doc.line(20, yPosition - 2, 190, yPosition - 2);
-      yPosition += 5;
-
-      // Table data
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-
-      filteredParticipantes.forEach((participante, index) => {
-        if (yPosition > 270) { // New page if needed
-          doc.addPage();
-          yPosition = 30;
-        }
-
-        const nombre = `${participante.nombres || ''} ${participante.apellidos || ''}`.trim();
-        const edad = participante.edad ? `${participante.edad}` : '';
-        const telefono = participante.telefono || '';
-        const sede = participante.sede || '';
-
-        doc.text(nombre, 20, yPosition);
-        doc.text(edad, 100, yPosition);
-        doc.text(telefono, 130, yPosition);
-        doc.text(sede, 170, yPosition);
-
-        yPosition += 8;
-      });
-
-      // Statistics at the bottom
-      if (yPosition > 250) {
-        doc.addPage();
-        yPosition = 30;
-      }
-
-      yPosition += 10;
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.text('Estadísticas:', 20, yPosition);
-      yPosition += 10;
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.text(`Total de participantes: ${filteredParticipantes.length}`, 30, yPosition);
-      yPosition += 8;
-      doc.text(`Activos: ${filteredParticipantes.filter(p => p.estado === 'Activo').length}`, 30, yPosition);
-      yPosition += 8;
-      doc.text(`Inactivos: ${filteredParticipantes.filter(p => p.estado === 'Inactivo').length}`, 30, yPosition);
-
-      // Generate filename
-      const date = new Date().toISOString().split('T')[0];
-      const sedeName = filtros.sede === 'Todas' ? 'todas-sedes' : filtros.sede.toLowerCase().replace(' ', '-');
-      const filename = `participantes-${sedeName}-${date}.pdf`;
-
-      // Save the PDF
-      doc.save(filename);
-
-      console.log('✅ PDF generado exitosamente');
-    } catch (error) {
-      console.error('❌ Error generando PDF:', error);
-      alert('Error al generar PDF: ' + error.message);
-    }
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   if (loading) {
