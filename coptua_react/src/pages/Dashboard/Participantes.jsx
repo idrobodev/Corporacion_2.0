@@ -409,9 +409,9 @@ const Participantes = () => {
           <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Sede Bello</p>
+                <p className="text-sm font-medium text-gray-600">Sedes Bello</p>
                 <p className="text-2xl font-bold text-purple-600">
-                  {filteredParticipantes.filter(p => p.sede === "Bello").length}
+                  {filteredParticipantes.filter(p => p.sede && p.sede.toLowerCase().includes("bello")).length}
                 </p>
               </div>
               <i className="fas fa-map-marker-alt text-purple-600 text-2xl"></i>
@@ -630,11 +630,39 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
     nombre: participante.nombre,
     edad: participante.edad,
     telefono: participante.telefono,
+    genero: participante.genero || 'MASCULINO', // Default if not provided
     sede: participante.sede,
     estado: participante.estado,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Opciones de sedes por género
+  const getSedesPorGenero = (genero) => {
+    if (genero === 'MASCULINO') {
+      return [
+        { value: 'Sede Masculina Bello Principal', label: 'Bello Principal Masculina' },
+        { value: 'Sede Masculina Bello Campestre', label: 'Bello Campestre Masculina' },
+        { value: 'Sede Masculina Apartadó', label: 'Apartadó Masculina' },
+      ];
+    } else {
+      return [
+        { value: 'Sede Femenina Bello Principal', label: 'Bello Principal Femenina' },
+        { value: 'Sede Femenina Apartadó', label: 'Apartadó Femenina' },
+      ];
+    }
+  };
+
+  // Actualizar sede cuando cambia el género
+  const handleGeneroChange = (genero) => {
+    const sedesDisponibles = getSedesPorGenero(genero);
+    const nuevaSede = sedesDisponibles[0]?.value || '';
+    setFormData(prev => ({
+      ...prev,
+      genero,
+      sede: nuevaSede
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -691,7 +719,7 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Edad</label>
             <input
@@ -702,7 +730,20 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
               required
             />
           </div>
-          
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Género</label>
+            <select
+              value={formData.genero}
+              onChange={(e) => handleGeneroChange(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="MASCULINO">Masculino</option>
+              <option value="FEMENINO">Femenino</option>
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
             <input
@@ -713,7 +754,7 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Sede</label>
             <select
@@ -722,12 +763,14 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
-              <option value="Bello Principal">Bello Principal</option>
-              <option value="Bello Campestre">Bello Campestre</option>
-              <option value="Apartadó">Apartadó</option>
+              {getSedesPorGenero(formData.genero).map(sede => (
+                <option key={sede.value} value={sede.value}>
+                  {sede.label}
+                </option>
+              ))}
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
             <select
@@ -740,7 +783,7 @@ const ModalEditarParticipante = ({ participante, onCerrar, onActualizar }) => {
               <option value="Inactivo">Inactivo</option>
             </select>
           </div>
-          
+
         </div>
         
         <div className="flex justify-end mt-6 space-x-3">
@@ -781,11 +824,39 @@ const ModalCrearParticipante = ({ onCerrar, onCrear }) => {
     nombre: '',
     edad: '',
     telefono: '',
-    sede: 'Bello',
+    genero: 'MASCULINO',
+    sede: 'Sede Masculina Bello Principal',
     estado: 'Activo',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Opciones de sedes por género
+  const getSedesPorGenero = (genero) => {
+    if (genero === 'MASCULINO') {
+      return [
+        { value: 'Sede Masculina Bello Principal', label: 'Bello Principal Masculina' },
+        { value: 'Sede Masculina Bello Campestre', label: 'Bello Campestre Masculina' },
+        { value: 'Sede Masculina Apartadó', label: 'Apartadó Masculina' },
+      ];
+    } else {
+      return [
+        { value: 'Sede Femenina Bello Principal', label: 'Bello Principal Femenina' },
+        { value: 'Sede Femenina Apartadó', label: 'Apartadó Femenina' },
+      ];
+    }
+  };
+
+  // Actualizar sede cuando cambia el género
+  const handleGeneroChange = (genero) => {
+    const sedesDisponibles = getSedesPorGenero(genero);
+    const nuevaSede = sedesDisponibles[0]?.value || '';
+    setFormData(prev => ({
+      ...prev,
+      genero,
+      sede: nuevaSede
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -851,7 +922,7 @@ const ModalCrearParticipante = ({ onCerrar, onCrear }) => {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Edad</label>
             <input
@@ -864,7 +935,20 @@ const ModalCrearParticipante = ({ onCerrar, onCrear }) => {
               max="120"
             />
           </div>
-          
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Género *</label>
+            <select
+              value={formData.genero}
+              onChange={(e) => handleGeneroChange(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="MASCULINO">Masculino</option>
+              <option value="FEMENINO">Femenino</option>
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label>
             <input
@@ -876,7 +960,7 @@ const ModalCrearParticipante = ({ onCerrar, onCrear }) => {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Sede</label>
             <select
@@ -884,12 +968,14 @@ const ModalCrearParticipante = ({ onCerrar, onCrear }) => {
               onChange={(e) => setFormData({...formData, sede: e.target.value})}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="Bello Principal">Bello Principal</option>
-              <option value="Bello Campestre">Bello Campestre</option>
-              <option value="Apartadó">Apartadó</option>
+              {getSedesPorGenero(formData.genero).map(sede => (
+                <option key={sede.value} value={sede.value}>
+                  {sede.label}
+                </option>
+              ))}
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
             <select
